@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+ 
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+    
+    /* New primary color - purple */
+    --primary: 262 80% 50%;
+    --primary-foreground: 210 40% 98%;
+    
+    /* New secondary color - light purple */
+    --secondary: 262 40% 96%;
+    --secondary-foreground: 262 60% 40%;
+    
+    --accent: 262 100% 70%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+    
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+    
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+    
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+    
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --ring: 262 70% 50%;
+    
+    --radius: 0.5rem;
+  }
+ 
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+ 
+    /* New primary color - purple */
+    --primary: 262 80% 50%;
+    --primary-foreground: 210 40% 98%;
+    
+    /* New secondary color - dark purple */
+    --secondary: 262 40% 16%;
+    --secondary-foreground: 262 60% 80%;
+    
+    --accent: 262 100% 30%;
+    --accent-foreground: 210 40% 98%;
+    
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --ring: 262 70% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer components {
+  .app-card {
+    @apply bg-background shadow-sm border rounded-lg;
+  }
+  
+  .loading-spinner {
+    @apply h-8 w-8 rounded-full border-4 border-t-primary border-r-transparent border-b-primary border-l-transparent animate-spin;
+  }
+  
+  .sidebar-item {
+    @apply flex items-center gap-3 p-2 rounded-lg hover:bg-accent cursor-pointer font-medium;
+  }
+  
+  .sidebar-item.active {
+    @apply bg-accent text-primary;
+  }
+}
