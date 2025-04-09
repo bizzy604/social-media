@@ -1,12 +1,12 @@
-# ConnectHub - Social Media Application
+# Bizzy - Social Media Application
 
-ConnectHub is a modern social media platform built with React, TypeScript, and Node.js. It features a responsive UI with real-time interactions, user authentication, post creation, likes, follows, and profile management.
+Bizzy is a modern social media platform built with React, TypeScript, and Node.js. It features a responsive UI with real-time interactions, user authentication, post creation, likes, follows, and profile management. This application uses GraphQL for efficient API queries and mutations.
 
-![ConnectHub Screenshot](https://via.placeholder.com/800x400?text=ConnectHub+Screenshot)
+![Bizzy Screenshot](https://via.placeholder.com/800x400?text=Bizzy+Screenshot)
 
 ## Project Overview
 
-This project was built as a basic social media feed where users can register, log in, post updates, like posts, and follow/unfollow other users. The focus was on delivering a clean, well-architected full-stack application using specific technologies.
+This project is a social media platform where users can register, log in, post updates, like posts, and follow/unfollow other users. The focus is on delivering a clean, well-architected full-stack application using modern technologies with GraphQL as the API layer.
 
 ## Features
 
@@ -36,21 +36,24 @@ This project was built as a basic social media feed where users can register, lo
 
 ### Frontend
 - **React (Vite)** - UI library for building dynamic user interfaces
-- **TypeScript** - Type safety and improved developer experience across React components
+- **TypeScript** - Type safety and improved developer experience
+- **Apollo Client** - GraphQL client for data fetching and state management
 - **React Router** - Client-side routing
 - **Tailwind CSS** - Utility-first CSS framework for styling
 - **Shadcn UI** - Component library with a customizable design system
-- **Axios** - HTTP requests
 - **React Hook Form** - Form handling with validation
 - **Zod** - Schema validation
 
 ### Backend
 - **Node.js** - JavaScript runtime
-- **Express** - Web framework for handling requests and server-side logic
+- **Express** - Web framework for handling requests
+- **Apollo Server** - GraphQL server implementation
+- **GraphQL** - API query language and runtime
 - **Prisma ORM** - Database interactions and schema management
 - **PostgreSQL** - Relational database for data persistence
 - **JWT** - Authentication
 - **Bcrypt** - Password hashing
+- **GraphQL Shield** - Permission management for GraphQL
 
 ## Getting Started
 
@@ -80,7 +83,11 @@ yarn install
 3. Set up environment variables:
 
 Create a `.env` file in the root directory with the following variables:
-```DATABASE_URL="postgresql://<username>:<password>@<host>:<port>/<database>?schema=public" JWT_SECRET="your-secret-key" VITE_API_URL="http://localhost:3001/api" ```
+```bash
+DATABASE_URL="postgresql://<username>:<password>@<host>:<port>/<database>?schema=public"
+JWT_SECRET="your-secret-key"
+PORT=4000
+```
 
 4. Set up the database:
 
@@ -90,20 +97,28 @@ npx prisma migrate dev
 yarn prisma:migrate
 ```
 
-The application should now be running at http://localhost:5173 with the backend server at http://localhost:3001.
+5. Start the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+```
+
+The application should now be running with the frontend at http://localhost:5173 and the GraphQL server at http://localhost:4000/graphql.
 
 ## Architectural Decisions
 
 ### Frontend Architecture
 
 1. **Component Structure**
-   - Utilized a modular component architecture separating UI components from business logic
-   - Implemented reusable UI components with Shadcn UI to maintain design consistency
-   - Used container/presentation pattern to separate data fetching from rendering
+   - Modular component architecture separating UI components from business logic
+   - Reusable UI components with Shadcn UI to maintain design consistency
+   - Custom hooks for GraphQL operations
 
 2. **State Management**
-   - Context API for global authentication state to avoid prop drilling
-   - React Query for server state management and caching
+   - Apollo Client for GraphQL state management and caching
+   - Context API for global authentication state
    - Local component state for UI-specific state
 
 3. **Routing Strategy**
@@ -114,206 +129,221 @@ The application should now be running at http://localhost:5173 with the backend 
 ### Backend Architecture
 
 1. **API Design**
-   - RESTful API endpoints organized by resource
-   - JWT token-based authentication for secure API access
-   - Middleware for authentication and error handling
+   - GraphQL API with Apollo Server
+   - Type-safe schema with GraphQL Code Generator
+   - Modular resolvers organized by domain
+   - Dataloaders for efficient database access
 
 2. **Database Schema**
    - Normalized database design with proper relationships
-   - Used Prisma for type-safe database queries
-   - Implemented efficient joins for complex queries like feed generation
+   - Prisma for type-safe database queries
+   - Efficient database access patterns for complex queries
 
 3. **Security Measures**
    - Password hashing with bcrypt
    - JWT for stateless authentication
-   - Input validation on both client and server
-   - Protected routes with authentication middleware
+   - GraphQL Shield for permission management
+   - Input validation with GraphQL validation directives
 
-## Trade-offs and Assumptions
+## GraphQL Schema
 
-1. **Performance Trade-offs**
-   - Opted for a simpler API design over GraphQL to reduce initial complexity
-   - Used infinite scroll for posts to reduce initial load time but with the trade-off of more API calls
+The GraphQL schema is organized into the following main types:
 
-2. **Assumptions**
-   - Users have modern browsers with JavaScript enabled
-   - Small to medium user base (scalability considerations would differ for larger user bases)
-   - Basic social features would satisfy initial requirements (more complex features like messaging would be added later)
+### User
+```graphql
+type User {
+  id: ID!
+  username: String!
+  email: String!
+  name: String
+  bio: String
+  avatar: String
+  followers: [User!]
+  following: [User!]
+  posts: [Post!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+```
 
-3. **Scalability Considerations**
-   - Database connection pooling setup for improved performance
-   - Pagination implemented for listing endpoints to handle growth
-   - Stateless authentication to allow for horizontal scaling
+### Post
+```graphql
+type Post {
+  id: ID!
+  content: String!
+  author: User!
+  likes: [Like!]
+  comments: [Comment!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+```
 
-## Deployment
+### Like
+```graphql
+type Like {
+  id: ID!
+  user: User!
+  post: Post!
+  createdAt: DateTime!
+}
+```
 
-The application is deployed using the following services:
+### Comment
+```graphql
+type Comment {
+  id: ID!
+  content: String!
+  author: User!
+  post: Post!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+```
 
-- **Frontend**: Deployed on Vercel
-- **Backend**: Deployed on Railway or Heroku
-- **Database**: Uses Neon PostgreSQL (serverless Postgres)
+### Main Queries
+```graphql
+type Query {
+  me: User
+  user(id: ID, username: String): User
+  users(query: String, first: Int, skip: Int): [User!]!
+  post(id: ID!): Post
+  feed(first: Int, skip: Int): [Post!]!
+  userPosts(userId: ID!, first: Int, skip: Int): [Post!]!
+  userSuggestions(first: Int): [User!]!
+}
+```
 
-Live demo: [https://connecthub-social.vercel.app](https://connecthub-social.vercel.app)
-
-### Backend Deployment Guide
-
-#### Option 1: Deploy on Railway
-
-1. **Create a Railway account**:
-   - Sign up at [railway.app](https://railway.app)
-
-2. **Install the Railway CLI**:
-   ```bash
-   npm i -g @railway/cli
-   # Login to your account
-   railway login
-   ```
-
-3. **Initialize your project**:
-   ```bash
-   # Navigate to your backend directory
-   cd server
-   # Link to Railway project
-   railway init
-   ```
-
-4. **Set up environment variables**:
-   - In the Railway dashboard, go to your project
-   - Click on "Variables" and add:
-     - `DATABASE_URL` (your Neon PostgreSQL URL)
-     - `JWT_SECRET`
-     - `PORT` (usually set automatically)
-     - Any other environment variables needed
-
-5. **Deploy your application**:
-   ```bash
-   railway up
-   ```
-
-6. **Set up auto-deployment** (optional):
-   - Connect your GitHub repository in the Railway dashboard
-   - Enable automatic deployments on push to main branch
-
-#### Option 2: Deploy on Heroku
-
-1. **Create a Heroku account**:
-   - Sign up at [heroku.com](https://heroku.com)
-
-2. **Install the Heroku CLI**:
-   ```bash
-   npm install -g heroku
-   # Login to your account
-   heroku login
-   ```
-
-3. **Create a new Heroku app**:
-   ```bash
-   # Navigate to your backend directory
-   cd server
-   # Create a new Heroku app
-   heroku create connecthub-api
-   ```
-
-4. **Add a Procfile**:
-   Create a file named `Procfile` (no extension) in your backend directory:
-   ```
-   web: node dist/index.js
-   ```
-
-5. **Set up environment variables**:
-   ```bash
-   heroku config:set DATABASE_URL="your-neon-postgres-url"
-   heroku config:set JWT_SECRET="your-jwt-secret"
-   # Add any other required environment variables
-   ```
-
-6. **Deploy your application**:
-   ```bash
-   git subtree push --prefix server heroku main
-   # If your backend is in a subdirectory named "server"
-   ```
-
-7. **Set up auto-deployment** (optional):
-   - Connect your GitHub repository in the Heroku dashboard
-   - Enable automatic deployments on push to main branch
-
-### Important Deployment Considerations
-
-1. **Database migrations**:
-   - Make sure to run Prisma migrations on deployment:
-     ```bash
-     # For Railway, add this to your package.json scripts
-     "postdeploy": "prisma migrate deploy"
-     ```
-
-2. **CORS configuration**:
-   - Update your CORS settings to allow requests from your frontend domain:
-     ```javascript
-     app.use(cors({
-       origin: process.env.FRONTEND_URL || 'https://connecthub-social.vercel.app',
-       credentials: true
-     }));
-     ```
-
-3. **Update frontend API URL**:
-   - After deploying your backend, update the `VITE_API_URL` in your frontend environment to point to your new backend URL
-
-4. **Health check endpoint**:
-   - Add a simple health check endpoint to verify your backend is running:
-     ```javascript
-     app.get('/health', (req, res) => {
-       res.status(200).send('OK');
-     });
-     ```
-
-5. **Monitoring and logs**:
-   - Both Railway and Heroku provide log dashboards to monitor your application
-   - Set up error tracking with a service like Sentry for production monitoring
+### Main Mutations
+```graphql
+type Mutation {
+  register(input: RegisterInput!): AuthPayload!
+  login(input: LoginInput!): AuthPayload!
+  createPost(content: String!): Post!
+  updatePost(id: ID!, content: String!): Post!
+  deletePost(id: ID!): Boolean!
+  likePost(postId: ID!): Like!
+  unlikePost(postId: ID!): Boolean!
+  followUser(userId: ID!): Boolean!
+  unfollowUser(userId: ID!): Boolean!
+  updateProfile(input: UpdateProfileInput!): User!
+}
+```
 
 ## Project Structure
+
+```
+├── client/                 # Frontend React application
+│   ├── public/             # Static assets
+│   ├── src/
+│   │   ├── components/     # Reusable UI components
+│   │   ├── context/        # React context providers
+│   │   ├── graphql/        # GraphQL queries and mutations
+│   │   ├── hooks/          # Custom React hooks
+│   │   ├── lib/            # Utility functions
+│   │   ├── pages/          # Page components
+│   │   ├── styles/         # Global styles
+│   │   ├── types/          # TypeScript type definitions
+│   │   ├── App.tsx         # Main application component
+│   │   └── main.tsx        # Application entry point
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── vite.config.ts
+├── server/                 # Backend GraphQL server
+│   ├── src/
+│   │   ├── context.ts      # GraphQL context creation
+│   │   ├── dataloaders/    # Efficient data loading
+│   │   ├── directives/     # GraphQL schema directives
+│   │   ├── generated/      # Generated GraphQL types
+│   │   ├── permissions/    # GraphQL Shield rules
+│   │   ├── resolvers/      # GraphQL resolvers
+│   │   ├── schema/         # GraphQL schema definitions
+│   │   ├── utils/          # Utility functions
+│   │   └── index.ts        # Server entry point
+│   ├── package.json
+│   └── tsconfig.json
+├── prisma/                 # Prisma schema and migrations
+│   ├── schema.prisma       # Database schema
+│   └── migrations/         # Database migrations
+├── .env                    # Environment variables
+├── .gitignore
+├── package.json
+└── README.md
+```
 
 ## Available Scripts
 
 ```bash
-npm run dev - Start the frontend development server
-npm run server - Start the backend server
-npm run dev:all - Run both frontend and backend in development mode
-npm run build - Build the frontend for production
+# Frontend
+npm run dev:client - Start the frontend development server
+npm run build:client - Build the frontend for production
+
+# Backend
+npm run dev:server - Start the backend GraphQL server
+npm run build:server - Build the backend for production
+
+# Full stack
+npm run dev - Run both frontend and backend in development mode
+npm run build - Build both frontend and backend for production
+
+# Database
 npm run prisma:generate - Generate Prisma client
 npm run prisma:migrate - Run database migrations
 npm run prisma:studio - Open Prisma Studio to manage data
+
+# GraphQL
+npm run codegen - Generate TypeScript types from GraphQL schema
 ```
 
-## API Endpoints
+## GraphQL API Playground
 
-### Authentication
+When running in development mode, the GraphQL Playground is available at http://localhost:4000/graphql. This interactive tool allows you to explore the schema and test queries and mutations.
 
-```bash
-POST /api/auth/register - Register a new user
-POST /api/auth/login - Login a user
-GET /api/auth/me - Get current user data
-```
+## Deployment
 
-### Posts
+### Frontend Deployment (Vercel)
 
-```bash
-GET /api/posts/feed - Get posts for the feed
-POST /api/posts - Create a new post
-POST /api/posts/:id/like - Like a post
-DELETE /api/posts/:id/like - Unlike a post
-```
+1. **Sign up for Vercel**:
+   - Create an account at [Vercel](https://vercel.com/)
+   - Install the Vercel CLI: `npm i -g vercel`
 
-### Users
+2. **Deploy your frontend**:
+   ```bash
+   # From your client directory
+   vercel
+   ```
 
-```bash
-GET /api/users/suggestions - Get user suggestions
-GET /api/users/:username - Get user by username
-GET /api/users/:id/posts - Get user's posts
-GET /api/users/:id/followers - Get user's followers
-GET /api/users/:id/following - Get users that the user is following
-POST /api/users/:id/follow - Follow a user
-DELETE /api/users/:id/follow - Unfollow a user
-```
+3. **Configure environment variables**:
+   - In the Vercel dashboard, add the `VITE_GRAPHQL_URL` environment variable pointing to your GraphQL API URL
+
+### Backend Deployment (Railway)
+
+1. **Sign up for Railway**:
+   - Create an account at [Railway](https://railway.app/)
+   - Install the Railway CLI:
+   ```bash
+   npm i -g @railway/cli
+   railway login
+   ```
+
+2. **Initialize your project**:
+   ```bash
+   # Navigate to your server directory
+   cd server
+   railway init
+   ```
+
+3. **Set up environment variables**:
+   - In the Railway dashboard, add:
+     - `DATABASE_URL` (your PostgreSQL URL)
+     - `JWT_SECRET`
+     - `PORT` (usually set automatically)
+     - `CORS_ORIGIN` (your frontend URL)
+
+4. **Deploy your application**:
+   ```bash
+   railway up
+   ```
 
 ## Contributing
 
@@ -329,11 +359,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Acknowledgements
 
+- [Apollo GraphQL](https://www.apollographql.com/) for GraphQL client and server
 - [Shadcn UI](https://ui.shadcn.com/) for the component library
 - [React Router](https://reactrouter.com/) for client-side routing
 - [Prisma](https://www.prisma.io/) for the ORM
 - [Tailwind CSS](https://tailwindcss.com/) for styling
 - [Neon](https://neon.tech/) for serverless PostgreSQL database
 - [Vercel](https://vercel.com/) for frontend hosting
-
-
