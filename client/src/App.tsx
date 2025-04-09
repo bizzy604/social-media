@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
-import { useQuery } from '@apollo/client';
+
 import { AuthProvider, useAuth } from './context/AuthContext';
-import { GET_ME } from './graphql/queries/user';
+
 import React from 'react';
 
 // Pages

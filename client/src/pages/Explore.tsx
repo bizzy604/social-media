@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_USER_SUGGESTIONS } from '../graphql/queries/user';
 import { FOLLOW_USER, UNFOLLOW_USER } from '../graphql/mutations/user';

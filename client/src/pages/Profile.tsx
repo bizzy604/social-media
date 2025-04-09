@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_USER_PROFILE, GET_USER_POSTS } from '../graphql/queries/user';
 import { FOLLOW_USER, UNFOLLOW_USER } from '../graphql/mutations/user';
@@ -40,7 +40,7 @@ type Post = {
 export default function Profile() {
   const { username } = useParams<{ username: string }>();
   const { user: currentUser } = useAuth();
-  const [activeTab, setActiveTab] = useState<'posts' | 'about'>('posts');
+  const [] = useState<'posts' | 'about'>('posts');
   const [followInProgress, setFollowInProgress] = useState(false);
 
   const { data: profileData, loading: profileLoading, error: profileError, refetch: refetchProfile } = useQuery(
@@ -55,7 +55,7 @@ export default function Profile() {
     }
   );
 
-  const { data: postsData, loading: postsLoading, error: postsError, refetch: refetchPosts } = useQuery(GET_USER_POSTS, {
+  const { data: postsData, error: postsError } = useQuery(GET_USER_POSTS, {
     variables: { userId: profileData?.user?.id },
     skip: !profileData?.user?.id,
     fetchPolicy: 'network-only',

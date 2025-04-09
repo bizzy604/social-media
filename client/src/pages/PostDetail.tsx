@@ -20,7 +20,7 @@ type Comment = {
 
 export default function PostDetail() {
   const { postId } = useParams<{ postId: string }>();
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [commentContent, setCommentContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [isLikeProcessing, setIsLikeProcessing] = useState(false);

@@ -1,7 +1,7 @@
-import React, { useState, FormEvent } from 'react';
+import { useState, FormEvent } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_FEED } from '../graphql/queries/post';
-import { CREATE_POST, LIKE_POST, UNLIKE_POST } from '../graphql/mutations/post';
+import { CREATE_POST } from '../graphql/mutations/post';
 import { useAuth } from '../context/AuthContext';
 import Layout from '../components/layout/Layout';
 import PostCard from '../components/post/PostCard';
@@ -23,7 +23,7 @@ type Post = {
 };
 
 export default function Home() {
-  const { user, isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuth();
   const [postContent, setPostContent] = useState('');
   const [submitting, setSubmitting] = useState(false);
 

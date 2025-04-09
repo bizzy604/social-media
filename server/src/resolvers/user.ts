@@ -53,7 +53,6 @@ export const userResolvers = {
       return prisma.user.findMany({
         where: {
           id: { not: userId },
-          id: { notIn: followingIds },
         },
         take: first || 5,
         orderBy: { createdAt: 'desc' },

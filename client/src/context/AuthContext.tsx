@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const { data, loading: queryLoading, refetch } = useQuery(GET_ME, {
+  const { loading: queryLoading } = useQuery(GET_ME, {
     skip: !localStorage.getItem('token'),
     onCompleted: (data) => {
       if (data?.me) {

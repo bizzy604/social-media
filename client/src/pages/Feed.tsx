@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react';
+import { useState, FormEvent } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
 import { GET_FEED } from '../graphql/queries/post';
 import { CREATE_POST, LIKE_POST, UNLIKE_POST } from '../graphql/mutations/post';
