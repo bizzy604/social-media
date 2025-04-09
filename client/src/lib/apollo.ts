@@ -1,8 +1,12 @@
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+import { ApolloClient, InMemoryCache, createHttpLink, from } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 
+// Use environment variable in production or fallback to localhost in development
+// @ts-ignore - Vite provides import.meta.env but TypeScript doesn't recognize it by default
+const API_URL = import.meta.env?.VITE_API_URL || 'http://localhost:4000/graphql';
+
 const httpLink = createHttpLink({
-  uri: import.meta.env.VITE_GRAPHQL_URL || 'http://localhost:4000/graphql',
+  uri: API_URL,
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -18,6 +22,6 @@ const authLink = setContext((_, { headers }) => {
 });
 
 export const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link: from([authLink, httpLink]),
   cache: new InMemoryCache(),
 });
