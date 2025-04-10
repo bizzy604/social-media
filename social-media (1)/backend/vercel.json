@@ -9,19 +9,25 @@
   "routes": [
     {
       "src": "/graphql",
-      "dest": "index.js"
+      "dest": "/api/graphql.js"
     },
     {
       "src": "/health",
-      "dest": "index.js"
+      "dest": "/api/health.js"
     },
     {
-      "src": "/(.*)",
-      "dest": "index.js"
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
     }
   ],
   "env": {
-    "NODE_ENV": "production"
+    "NODE_ENV": "production",
+    "VERCEL": "1"
   },
-  "outputDirectory": "."
+  "functions": {
+    "api/graphql.js": {
+      "memory": 1024,
+      "maxDuration": 60
+    }
+  }
 }
