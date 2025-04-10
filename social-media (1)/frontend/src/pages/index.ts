@@ -1,0 +1,6 @@
+export { default as HomePage } from "./home"
+export { default as ExplorePage } from "./explore"
+export { default as ProfilePage } from "./profile"
+export { default as NotFoundPage } from "./not-found"
+export { default as SignInPage } from "./auth/sign-in"
+export { default as SignUpPage } from "./auth/sign-up"
